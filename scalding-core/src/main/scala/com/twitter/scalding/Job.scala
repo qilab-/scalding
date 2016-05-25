@@ -77,7 +77,7 @@ class Job(val args: Args) extends FieldConversions with java.io.Serializable {
   /**
    * Use this if a map or reduce phase takes a while before emitting tuples.
    */
-  def keepAlive {
+  def keepAlive(): Unit = {
     val flowProcess = RuntimeStats.getFlowProcessForUniqueId(uniqueId)
     flowProcess.keepAlive
   }
@@ -244,17 +244,17 @@ class Job(val args: Args) extends FieldConversions with java.io.Serializable {
 
   // called before run
   // only override if you do not use flowDef
-  def validate {
+  def validate(): Unit = {
     FlowStateMap.validateSources(flowDef, mode)
   }
 
   // called after successfull run
   // only override if you do not use flowDef
-  def clear {
+  def clear(): Unit = {
     FlowStateMap.clear(flowDef)
   }
 
-  protected def handleStats(statsData: CascadingStats) {
+  protected def handleStats(statsData: CascadingStats): Unit = {
     scaldingCascadingStats = Some(statsData)
     // TODO: Why the two ways to do stats? Answer: jank-den.
     if (args.boolean("scalding.flowstats")) {
@@ -291,9 +291,9 @@ class Job(val args: Args) extends FieldConversions with java.io.Serializable {
   private[scalding] var completedFlow: Option[Flow[_]] = None
 
   //Override this if you need to do some extra processing other than complete the flow
-  def run: Boolean = {
+  def run(): Boolean = {
     val flow = buildFlow
-    flow.complete
+    flow.complete()
     val statsData = flow.getFlowStats
     handleStats(statsData)
     completedFlow = Some(flow)
@@ -329,7 +329,7 @@ class Job(val args: Args) extends FieldConversions with java.io.Serializable {
    * access the implicit Pipe => RichPipe which makes: pipe.write( )
    * convenient
    */
-  def write(pipe: Pipe, src: Source) { src.writeFrom(pipe) }
+  def write(pipe: Pipe, src: Source): Unit = { src.writeFrom(pipe) }
 
   /*
    * Need to be lazy to be used within pipes.

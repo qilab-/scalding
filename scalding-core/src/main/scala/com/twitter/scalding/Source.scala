@@ -187,7 +187,7 @@ abstract class Source extends java.io.Serializable {
     pipe
   }
 
-  protected def checkFlowDefNotNull(implicit flowDef: FlowDef, mode: Mode) {
+  protected def checkFlowDefNotNull(implicit flowDef: FlowDef, mode: Mode): Unit = {
     assert(flowDef != null, "Trying to access null FlowDef while in mode: %s".format(mode))
   }
 
@@ -268,9 +268,9 @@ class NullTap[Config, Input, Output, SourceContext, SinkContext]
   def getIdentifier = "nullTap"
   def openForWrite(flowProcess: FlowProcess[Config], output: Output) =
     new TupleEntryCollector {
-      override def add(te: TupleEntry) {}
-      override def add(t: CTuple) {}
-      protected def collect(te: TupleEntry) {}
+      override def add(te: TupleEntry): Unit = ()
+      override def add(t: CTuple): Unit = ()
+      protected def collect(te: TupleEntry): Unit = ()
     }
 
   def createResource(conf: Config) = true

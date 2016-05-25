@@ -7,7 +7,7 @@ abstract class CascadeJob(args: Args) extends Job(args) {
 
   def jobs: Seq[Job]
 
-  override def run = {
+  override def run(): Boolean = {
     val flows = jobs.map { _.buildFlow }
     val cascade = new CascadeConnector().connect(flows: _*)
     preProcessCascade(cascade)
@@ -19,7 +19,7 @@ abstract class CascadeJob(args: Args) extends Job(args) {
     statsData.isSuccessful
   }
 
-  override def validate {
+  override def validate(): Unit = {
     jobs.foreach { _.validate }
   }
 
